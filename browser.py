@@ -1,3 +1,6 @@
+import argparse
+import os
+import sys
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -34,9 +37,32 @@ Twitter and Square Chief Executive Officer Jack Dorsey
  Tuesday, a signal of the strong ties between the Silicon Valley giants.
 '''
 
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument('directory')
+args = arg_parser.parse_args()
+
+if not os.access(args.directory, os.F_OK):
+    os.mkdir(args.directory)
+
 while True:
     user_input = input().lower()
     if user_input == 'exit':
         break
-    print(globals().get(user_input.replace('.', '_')), 'Not found')
+    if '.' not in user_input:
+        print('Error')
+        continue
+    file_name = user_input[:user_input.index('.')]
+    file_path = os.path.join(os.getcwd(), args.directory, file_name)
+
+    if file_name in os.listdir(os.getcwd()):
+        with open(os.path.join(os.getcwd(), args.directory, file_name), 'r') as file_in:
+            print(file_in.read())
+    else:
+        try:
+            content = globals()[user_input.replace('.', '_')]
+            print(content)
+            with open(os.path.join(os.getcwd(), args.directory, file_name), 'w') as file_out:
+                file_out.write(content)
+        except KeyError:
+            print('Error, Not found')
 
