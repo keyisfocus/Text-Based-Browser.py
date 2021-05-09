@@ -1,6 +1,6 @@
 import argparse
+import collections
 import os
-import sys
 
 nytimes_com = '''
 This New Liquid Is Magnetic, and Mesmerizing
@@ -44,25 +44,40 @@ args = arg_parser.parse_args()
 if not os.access(args.directory, os.F_OK):
     os.mkdir(args.directory)
 
+stack = collections.deque()
+current_page = None
+
+
+def get_content(resource_name) -> str:
+    file_name = resource_name[:resource_name.index('.')]
+    file_path = os.path.join(os.getcwd(), args.directory, file_name)
+    if file_name in os.listdir(os.getcwd()):
+        with open(file_path, 'r') as file_in:
+            return file_in.read()
+    else:
+        try:
+            content = globals()[resource_name.replace('.', '_')]
+            with open(file_path, 'w') as file_out:
+                file_out.write(content)
+            return content
+        except KeyError:
+            return 'Error, Not found'
+
+
 while True:
     user_input = input().lower()
     if user_input == 'exit':
         break
+    if user_input == 'back':
+        if stack:
+            current_page = stack.pop()
+            print(get_content(current_page))
+        continue
     if '.' not in user_input:
         print('Error')
         continue
-    file_name = user_input[:user_input.index('.')]
-    file_path = os.path.join(os.getcwd(), args.directory, file_name)
 
-    if file_name in os.listdir(os.getcwd()):
-        with open(os.path.join(os.getcwd(), args.directory, file_name), 'r') as file_in:
-            print(file_in.read())
-    else:
-        try:
-            content = globals()[user_input.replace('.', '_')]
-            print(content)
-            with open(os.path.join(os.getcwd(), args.directory, file_name), 'w') as file_out:
-                file_out.write(content)
-        except KeyError:
-            print('Error, Not found')
-
+    if current_page:
+        stack.append(current_page)
+    current_page = user_input
+    print(get_content(current_page))
