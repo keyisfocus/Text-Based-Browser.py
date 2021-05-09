@@ -1,41 +1,8 @@
 import argparse
 import collections
 import os
+import requests
 
-nytimes_com = '''
-This New Liquid Is Magnetic, and Mesmerizing
-
-Scientists have created “soft” magnets that can flow 
-and change shape, and that could be a boon to medicine 
-and robotics. (Source: New York Times)
-
-
-Most Wikipedia Profiles Are of Men. This Scientist Is Changing That.
-
-Jessica Wade has added nearly 700 Wikipedia biographies for
- important female and minority scientists in less than two 
- years.
-
-'''
-
-bloomberg_com = '''
-The Space Race: From Apollo 11 to Elon Musk
-
-It's 50 years since the world was gripped by historic images
- of Apollo 11, and Neil Armstrong -- the first man to walk 
- on the moon. It was the height of the Cold War, and the charts
- were filled with David Bowie's Space Oddity, and Creedence's 
- Bad Moon Rising. The world is a very different place than 
- it was 5 decades ago. But how has the space race changed since
- the summer of '69? (Source: Bloomberg)
-
-
-Twitter CEO Jack Dorsey Gives Talk at Apple Headquarters
-
-Twitter and Square Chief Executive Officer Jack Dorsey 
- addressed Apple Inc. employees at the iPhone maker’s headquarters
- Tuesday, a signal of the strong ties between the Silicon Valley giants.
-'''
 
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument('directory')
@@ -48,16 +15,16 @@ stack = collections.deque()
 current_page = None
 
 
-def get_content(resource_name) -> str:
-    file_name = resource_name[:resource_name.index('.')]
+def get_content(url) -> str:
+    file_name = url[8:url.rindex('.')]
     file_path = os.path.join(os.getcwd(), args.directory, file_name)
     if file_name in os.listdir(os.getcwd()):
-        with open(file_path, 'r') as file_in:
+        with open(file_path, 'r', encoding='utf-8') as file_in:
             return file_in.read()
     else:
         try:
-            content = globals()[resource_name.replace('.', '_')]
-            with open(file_path, 'w') as file_out:
+            content = requests.get(url).text
+            with open(file_path, 'w', encoding='utf-8') as file_out:
                 file_out.write(content)
             return content
         except KeyError:
@@ -79,5 +46,6 @@ while True:
 
     if current_page:
         stack.append(current_page)
-    current_page = user_input
+    current_page = user_input if 'https://' in user_input else 'https://' + user_input
     print(get_content(current_page))
+

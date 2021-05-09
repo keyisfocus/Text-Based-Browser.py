@@ -15,3 +15,15 @@ In this stage, your program should:
 * Read the next input. If this input is the string `exit`, the program should stop running. If not, check if the string corresponds to the name of any file with a web page you saved before. If it does, print the content of this file. If it doesn't, check if the string is a new valid URL. If it is, repeat step 4. If it isn't, output an error message.
 
 ## Stage 3
+The result of this task is the same as in the previous one, but now the program has a new feature:
+
+1. The program should show the previous web page saved to a file if the user types `back`. Note that the last page you saved to a file is actually the current page; when the user types `back`, you should output the page that was before the current one. You can implement a stack to do this, but note that the current page should not be in that stack. For example, if the user inputs `bloomberg.com`, then `nytimes.com`, and then `back`, the user should see the content of `bloomberg.com`.
+2. If there are no more pages in the browser history, don’t output anything. For example, if the first input of the user is the string `back`, your program shouldn't output anything.
+
+## Stage 4
+Keep the functionality from the previous stages and follow the same guidelines for file names. You don't need to keep the predefined variables with the content of web pages. Instead, add new features to the browser:
+
+Your program should read the URL from the input as before, but now it should output the content of a real web page. Output the page with all the tags and text inside them. We'll get rid of tags in the next stage.
+Since the user can input the URL without `https://` in the beginning, your browser should append this string if it is not there.
+
+## Stage 5
