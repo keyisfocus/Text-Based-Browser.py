@@ -29,13 +29,12 @@ def get_content(url) -> str:
             if response:
                 soup = BeautifulSoup(response.content, 'html.parser')
                 content = []
-                for tag in soup.find_all('a'):
-                    link_text = tag.text.strip()
-                    if link_text:
-                        content.append(Fore.BLUE + link_text + Fore.RESET)
 
-                for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'p']):
-                    content.append(tag.text.strip())
+                for tag in soup.find_all([f'h{i}' for i in range(1, 7)] + ['ul', 'ol', 'p', 'a']):
+                    t = tag.text.strip()
+                    if tag.name == 'a':
+                        t = Fore.BLUE + t + Fore.RESET
+                    content.append(t)
 
                 content = os.linesep.join(content)
                 with open(file_path, 'w', encoding='utf-8') as file_out:
@@ -49,18 +48,17 @@ def get_content(url) -> str:
 
 while True:
     user_input = input().lower()
-    if user_input == 'exit':
+    if '.' in user_input:
+        if current_page:
+            stack.append(current_page)
+        current_page = user_input if 'https://' in user_input else 'https://' + user_input
+        print(get_content(current_page))
+
+    elif user_input == 'exit':
         break
-    if user_input == 'back':
+    elif user_input == 'back':
         if stack:
             current_page = stack.pop()
             print(get_content(current_page))
-        continue
-    if '.' not in user_input:
+    else:
         print('Incorrect URL')
-        continue
-
-    if current_page:
-        stack.append(current_page)
-    current_page = user_input if 'https://' in user_input else 'https://' + user_input
-    print(get_content(current_page))
