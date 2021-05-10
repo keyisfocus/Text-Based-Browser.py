@@ -34,3 +34,10 @@ Use the library `beautifulsoup4` to make these changes. This library is already 
 To pass the tests, it's enough to simply find the function allowing us to extract the human-readable text from a web page. If you’re curious, feel free to browse through some more information about parsing!
 
 When an invalid URL is entered (URL without a dot and a top-level domain name), the program should output `Incorrect URL`.
+
+## Stage 6
+Keep the functionality from the previous stages, but now make all links in your browser blue.
+
+Each link should start with a new line and be highlighted with blue color.
+
+Don't forget that the rest of the page's text should be printed too (but should not be highlighted).

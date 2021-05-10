@@ -1,9 +1,10 @@
 import argparse
 import collections
 import os
-import requests
-from bs4 import BeautifulSoup
 
+import requests
+from bs4 import BeautifulSoup, element
+from colorama import Fore
 
 arg_parser = argparse.ArgumentParser()
 arg_parser.add_argument('directory')
@@ -27,7 +28,16 @@ def get_content(url) -> str:
             response = requests.get(url)
             if response:
                 soup = BeautifulSoup(response.content, 'html.parser')
-                content = soup.get_text(os.linesep, True)
+                content = []
+                for tag in soup.find_all('a'):
+                    link_text = tag.text.strip()
+                    if link_text:
+                        content.append(Fore.BLUE + link_text + Fore.RESET)
+
+                for tag in soup.find_all(['h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'p']):
+                    content.append(tag.text.strip())
+
+                content = os.linesep.join(content)
                 with open(file_path, 'w', encoding='utf-8') as file_out:
                     file_out.write(content)
                 return content
@@ -54,4 +64,3 @@ while True:
         stack.append(current_page)
     current_page = user_input if 'https://' in user_input else 'https://' + user_input
     print(get_content(current_page))
-
