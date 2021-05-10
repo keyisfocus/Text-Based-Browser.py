@@ -2,6 +2,7 @@ import argparse
 import collections
 import os
 import requests
+from bs4 import BeautifulSoup
 
 
 arg_parser = argparse.ArgumentParser()
@@ -23,12 +24,17 @@ def get_content(url) -> str:
             return file_in.read()
     else:
         try:
-            content = requests.get(url).text
-            with open(file_path, 'w', encoding='utf-8') as file_out:
-                file_out.write(content)
-            return content
-        except KeyError:
-            return 'Error, Not found'
+            response = requests.get(url)
+            if response:
+                soup = BeautifulSoup(response.content, 'html.parser')
+                content = soup.get_text(os.linesep, True)
+                with open(file_path, 'w', encoding='utf-8') as file_out:
+                    file_out.write(content)
+                return content
+            else:
+                return response.status_code
+        except requests.exceptions.ConnectionError:
+            return 'Incorrect URL'
 
 
 while True:
@@ -41,7 +47,7 @@ while True:
             print(get_content(current_page))
         continue
     if '.' not in user_input:
-        print('Error')
+        print('Incorrect URL')
         continue
 
     if current_page:

@@ -27,3 +27,10 @@ Your program should read the URL from the input as before, but now it should out
 Since the user can input the URL without `https://` in the beginning, your browser should append this string if it is not there.
 
 ## Stage 5
+In this stage, you need to extract and output the content between these tags. No more `<div>`, `<script>`, `<p>` and so on, just a clear readable text! Your browser should display only the content of a limited list of tags (`<p>`, headers, `<a>` and `<ul>`, `<ol>`, `<li>`) without showing the tags themselves.
+
+Use the library `beautifulsoup4` to make these changes. This library is already installed in your project.
+
+To pass the tests, it's enough to simply find the function allowing us to extract the human-readable text from a web page. If you’re curious, feel free to browse through some more information about parsing!
+
+When an invalid URL is entered (URL without a dot and a top-level domain name), the program should output `Incorrect URL`.
